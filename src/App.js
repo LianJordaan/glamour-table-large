@@ -143,7 +143,7 @@ function App() {
   const giveCommand = React.useMemo(() => {
 
     if (flatAlphas && decColors) {
-      return `/give @p diamond_sword[item_model="glam:glam_base",custom_model_data={flags:[${flatAlphas}],colors:[${decColors}]}]`
+      return `/give @p stick[item_model="glam:glam_base",custom_model_data={flags:[${flatAlphas}],colors:[${decColors}]}]`
     }
   }, [flatAlphas, decColors])
 
@@ -172,7 +172,7 @@ function App() {
                   style={{ display: 'none' }} />
               </>
               :
-              <img src={image} width={320} height={320} />
+              <img src={image} width={320} height={320} style={{ imageRendering: "pixelated" }} />
             }
 
           </div>
