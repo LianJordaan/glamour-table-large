@@ -14,25 +14,113 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: hsl(180, 13%, 18%);
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(8px + 2vmin);
+  color: white;
+}
+
+.App-body {
+  background-color: hsl(180, 13%, 24%);
+  height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: flex-start;
+  font-size: calc(8px + 2vmin);
   color: white;
+  overflow-y: 'scroll';
+}
+
+.Image-holder {
+  width: 760px;
+  height: 400px;
+  display: flex;
+  background: rgb(200,200,200);
+  flex-direction: row;
+  align-items: center;
+  justify-content: center; 
+}
+
+.Command-button {
+  min-width: 760px;
+  max-width: 760px;
+  font-size: 11pt;  
+}
+
+.Command-holder {
+  display: flex;
+  background: rgb(32, 32, 32);
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center; 
+  min-width: 760px;
+  max-width: 760px;
+  min-height: 160px;
+  max-height: 160px;
+  inline-size: 750px;
+  font-size: 11pt;
+  overflow: hidden;
+  word-break: break-word;
+  text-align: left;
+  overflow-y: scroll;
+  
+}
+
+.Image {
+  width: 320px;
+  height: 320px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center; 
+  background: rgb(255,255,255);
+}
+
+.Grid {
+  width: 320px;
+  height: 320px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center; 
+  background: rgb(255,255,255);
+}
+
+.Grid-row {
+  width: 320px;
+  height: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center; 
+  background: rgb(255,255,255);
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* unvisited link */
+a:link {
+  color: rgb(240, 240, 240);
+}
+
+/* visited link */
+a:visited {
+  color: rgb(240, 240, 240);
+}
+
+/* mouse over link */
+a:hover {
+  color: rgb(255, 255, 255);
+}
+
+/* selected link */
+a:active {
+  color: rgb(224, 224, 224);
 }
