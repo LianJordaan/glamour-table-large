@@ -213,7 +213,7 @@ function App() {
   const paletteDisplay = React.useMemo(() => {
     if (quantizeColors && palettes) {
       return (
-        <>
+        <div className="Scrollable">
           {palettes.map((entry) => {
             const handleChange = (e) => {
               if (e.target.checked) {
@@ -271,7 +271,7 @@ function App() {
             }
             return null;
           })}
-        </>
+        </div>
       );
     }
   }, [highlightIndex, palettes, quantizeColors]);
@@ -316,19 +316,21 @@ function App() {
         <div className="Image-holder">
           <div
             className="Image"
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              imageRendering: "pixelated",
-            }}
             onDrop={handleDrop}
             onDragOver={(event) => event.preventDefault()}
-          ></div>
+          >
+            <img
+              alt="Uploaded File"
+              className="Image"
+              src={image}
+              style={{
+                imageRendering: "pixelated",
+              }}
+            />
+          </div>
 
           <div style={{ width: "40px" }}>
-            <p>{"=>"}</p>
+            <p>{"  "}</p>
           </div>
           {exactColors == null ? (
             <div className="Image" />
@@ -413,6 +415,7 @@ function App() {
         )}
         {paletteDisplay}
       </div>
+      <div className="App-footer"/>
     </div>
   );
 }
