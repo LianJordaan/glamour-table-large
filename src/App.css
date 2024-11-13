@@ -36,7 +36,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: fles-start;
+  justify-content: flex-start;
   font-size: calc(8px + 2vmin);
   color: white;
   overflow-y: "scroll";
@@ -82,12 +82,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .Color-entry-a {
   height:100%;
-  width: 10%;
+  width: 5%;
   height: 24px;
   display: flex;
   flex-direction: row;
