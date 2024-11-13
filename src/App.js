@@ -87,6 +87,7 @@ function App() {
       const colorInts = [];
       const alphas = [];
       const paletteId = [];
+      const dyePalette = [];
 
       for (let i = 0; i < 256; i++) {
         let x = i % 16;
@@ -109,21 +110,23 @@ function App() {
       }
 
       const quantizedColors = [];
+      const counts = []
       if (quantizeColors) {
         const quantResult = quanti(baseColors, parseInt(colorCount), 3);
 
         for (let i = 0; i < parseInt(colorCount); i++) {
           const color = quantResult.palette[i];
-          // const colorInt = 256 * 256 * r + 256 * g + b;
           const result = colorToSequence(
             colorRgbMap,
             sequenceToColorFloatAverage,
             color
           );
           quantResult.palette[i] = result[2];
+          dyePalette.push(result);
+          counts.push(0);
         }
 
-        setPalette(quantResult.palette);
+
 
         for (let i = 0; i < 256; i++) {
           const [r, g, b] = quantResult.map(baseColors, 3 * i);
@@ -132,16 +135,45 @@ function App() {
           quantizedColors.push(b);
 
           let index = -1;
-          for (let j = 0; j < colorCount && index === -1; j++)
-          {
-            if (r === quantResult.palette[j][0] && g === quantResult.palette[j][1] &&  b === quantResult.palette[j][2])
-            {
+          for (let j = 0; j < colorCount && index === -1; j++) {
+            if (r === quantResult.palette[j][0] && g === quantResult.palette[j][1] && b === quantResult.palette[j][2]) {
               index = j;
+              if (alphas[i]) {
+                counts[j]++;
+              }
             }
           }
-          
+
           paletteId.push(index);
         }
+
+        const tmpPalette = [];
+        let count = 0;
+        let removed = 0;
+
+        for (let i = 0; i < parseInt(colorCount); i++) {
+          if (counts[i] > 0)
+          {
+            tmpPalette.push(dyePalette[i])
+            tmpPalette[count].push(count)
+            tmpPalette[count].push(counts[i]);
+            count++;
+          }
+          else{
+            for (let j = 0; j < 256; j++)
+            {
+              if (paletteId[j] + removed >= i)
+              {
+                paletteId[j]--;
+              }
+            }
+            removed++;
+          }
+        }
+
+        console.log(tmpPalette);
+
+        setPalette(tmpPalette);
       } else {
         for (let i = 0; i < 256; i++) {
           quantizedColors.push(baseColors[3 * i + 0]);
@@ -168,107 +200,41 @@ function App() {
     }
   }, [colorCount, imageData, quantizeColors]);
 
-  /*
+  const paletteDisplay = React.useMemo(() => {
+    if (palette) {
+      return (<>
+        {palette.map((entry) => {
+          if (entry[4] > 0) {
+            let r = (parseInt(entry[2][0]));
+            let g = (parseInt(entry[2][1]));
+            let b = (parseInt(entry[2][2]));
 
-  const rgbaArray = React.useMemo(() => {
-    if (imageData) {
-      const imagePixels = [];
+            let color = `rgb(${r},${g},${b})`;
+            let textColor = 'rgb(255,255,255)'
+            if (r > 160 && g > 160 && b > 160)
+            {
+             textColor = 'rgb(0,0,0)'
+            }
 
-      for (let x = 0; x < 16; x++) {
-        const col = [];
-        for (let y = 0; y < 16; y++) {
-          const i = 4 * y * 16 + 4 * x;
-          col.push({
-            r: imageData[i + 0],
-            g: imageData[i + 1],
-            b: imageData[i + 2],
-            a: imageData[i + 3],
-          });
-        }
-        imagePixels.push(col);
-      }
-
-      return imagePixels;
+            return (
+              <div className="Color-row">
+                <p className="Color-entry-a">{entry[3]}</p>
+                <p className="Color-entry-b" style={{ backgroundColor: color, color: textColor }}>{`(${r}, ${g}, ${b})`}</p>
+                <p className="Color-entry-c">{entry[0].join(' > ')}</p>
+              </div >)
+          }
+        })}
+      </>);
     }
-  }, [imageData]);
+  }, [palette])
 
-  const rgbArray = React.useMemo(() => {
-    if (rgbaArray) {
-      const rgb = [];
-      const a = [];
-
-      for (let i = 0; i < 256; i++) {
-        let x = i % 16;
-        let y = 15 - ((i / 16) | 0);
-        const pixel = rgbaArray[x][y];
-
-        rgb.push(pixel.r & 0xff);
-        rgb.push(pixel.g & 0xff);
-        rgb.push(pixel.b & 0xff);
-        a.push(pixel.a & 0xff);
-      }
-
-      setAlphas(a);
-      return rgb;
-    }
-  }, [rgbaArray]);
-
-  const quantizedArray = React.useMemo(() => {
-    if (rgbArray) {
-      if (!quantizeColors) return rgbArray;
-    }
-  }, [colorCount, quantizeColors, rgbArray]);
-
-  React.useEffect(() => {
-    if (quantizedArray && alphas) {
-      const colorStrings = [];
-      const colorInts = [];
-
-      for (let i = 0; i < 256; i++) {
-        const [r, g, b] = [
-          quantizedArray[3 * i + 0],
-          quantizedArray[3 * i + 1],
-          quantizedArray[3 * i + 2],
-        ];
-        colorStrings.push(`rgb(${r},${g},${b})`);
-        colorInts.push(256 * 256 + r + 256 * g + b);
-      }
-
-      setColors(colorStrings);
-      setDecColors(colorInts);
-    }
-  }, [alphas, quantizedArray]);
-
-  // React.useEffect(() => {
-  //   if (rgbaArray) {
-  //     const colorTable = [];
-  //     const alphaTable = [];
-  //     const decTable = [];
-  //
-  //     for (let i = 0; i < 256; i++) {
-  //       let x = i % 16;
-  //       let y = 15 - ((i / 16) | 0);
-  //       const pixel = rgbaArray[x][y];
-  //       colorTable.push(`rgb(${pixel.r},${pixel.g},${pixel.b})`);
-  //       decTable.push(pixel.r * 256 * 256 + pixel.g * 256 + pixel.b);
-  //       alphaTable.push(pixel.a > 0);
-  //     }
-  //
-  //     setColors(colorTable);
-  //     setAlphas(alphaTable);
-  //     setDecColors(decTable);
-  //   }
-  // }, [rgbaArray]);
-
-  */
 
   const giveCommand = React.useMemo(() => {
     if (alphas && decColors) {
-      return `/give ${target} ${itemId}[item_model="${
-        largeModel ? "glam:glam_large" : "glam:glam_base"
-      }",custom_model_data={flags:[${alphas.join(
-        ",\u200B"
-      )}],colors:[${decColors.join(",\u200B")}]}]`;
+      return `/give ${target} ${itemId}[item_model="${largeModel ? "glam:glam_large" : "glam:glam_base"
+        }",custom_model_data={flags:[${alphas.join(
+          ",\u200B"
+        )}],colors:[${decColors.join(",\u200B")}]}]`;
     }
   }, [alphas, decColors, itemId, largeModel, target]);
 
@@ -397,6 +363,7 @@ function App() {
         ) : (
           <></>
         )}
+        {paletteDisplay}
       </div>
     </div>
   );

@@ -73,6 +73,48 @@
   justify-content: space-around;
 }
 
+.Color-row {
+  background-color: hsl(180, 13%, 40%);
+  min-width: 100%;
+  max-width: 100%;
+  font-size: 11pt;
+  height: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.Color-entry-a {
+  height:100%;
+  width: 10%;
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.Color-entry-b {
+  height:100%;
+  width: 20%;
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.Color-entry-c {
+  height:100%;
+  width: 70%;
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 .Command-button {
   min-width: 100%;
   max-width: 100%;
