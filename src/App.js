@@ -65,9 +65,11 @@ function App() {
   };
 
   const handleChange = (e) => {
-    setFile(e.target.files[0]);
-    setImage(URL.createObjectURL(e.target.files[0]));
-    //handleFile(fileUploaded);
+    if (e.target?.files[0])
+    {
+      setFile(e.target.files[0]);
+      setImage(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   React.useEffect(() => {
@@ -319,14 +321,18 @@ function App() {
             onDrop={handleDrop}
             onDragOver={(event) => event.preventDefault()}
           >
-            <img
-              alt="Uploaded File"
-              className="Image"
-              src={image}
-              style={{
-                imageRendering: "pixelated",
-              }}
-            />
+            {image ? (
+              <img
+                alt="Uploaded File"
+                className="Image"
+                src={image}
+                style={{
+                  imageRendering: "pixelated",
+                }}
+              />
+            ) : (
+              <></>
+            )}
           </div>
 
           <div style={{ width: "40px" }}>
@@ -415,7 +421,7 @@ function App() {
         )}
         {paletteDisplay}
       </div>
-      <div className="App-footer"/>
+      <div className="App-footer" />
     </div>
   );
 }
