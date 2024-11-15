@@ -14,19 +14,41 @@ function App() {
   const [image, setImage] = React.useState(null);
   const [imageData, setImageData] = React.useState(null);
 
-  const [colors, setColors] = React.useState(null);
+  const [exactColors, setExactColors] = React.useState(null);
+  const [intColors, setIntColors] = React.useState(null);
+  const [paletteIds, setPaletteIds] = React.useState(null);
   const [alphas, setAlphas] = React.useState(null);
-  const [indices, setIndices] = React.useState(null);
-  const [decColors, setDecColors] = React.useState(null);
 
+  const [highlightIndex, setHighlightIndex] = React.useState(-1);
+  const [palettes, setPalettes] = React.useState(null);
+
+  // User Settings
   const [target, setTarget] = React.useState("@p");
-  const [itemId, setItemId] = React.useState("stick");
+  const [itemId, setItemId] = React.useState("poisonous_potato");
   const [largeModel, setLargeModel] = React.useState(false);
   const [showId, setShowId] = React.useState(false);
-
   const [quantizeColors, setQuantizeColors] = React.useState(false);
   const [colorCount, setColorCount] = React.useState("8");
-  const [palette, setPalette] = React.useState(null);
+
+  const displayInfo = React.useMemo(() => {
+    return {
+      exactColors,
+      paletteIds,
+      alphas,
+      highlightIndex,
+      palettes,
+      quantizeColors,
+      showId,
+    };
+  }, [
+    alphas,
+    exactColors,
+    highlightIndex,
+    paletteIds,
+    palettes,
+    quantizeColors,
+    showId,
+  ]);
 
   const hiddenFileInput = React.useRef(null);
 
@@ -43,9 +65,11 @@ function App() {
   };
 
   const handleChange = (e) => {
-    setFile(e.target.files[0]);
-    setImage(URL.createObjectURL(e.target.files[0]));
-    //handleFile(fileUploaded);
+    if (e.target?.files[0])
+    {
+      setFile(e.target.files[0]);
+      setImage(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   React.useEffect(() => {
@@ -83,7 +107,7 @@ function App() {
   React.useEffect(() => {
     if (imageData) {
       const baseColors = [];
-      const colorStrings = [];
+      const colorArrays = [];
       const colorInts = [];
       const alphas = [];
       const paletteId = [];
@@ -110,7 +134,6 @@ function App() {
       }
 
       const quantizedColors = [];
-      const counts = []
       if (quantizeColors) {
         const quantResult = quanti(baseColors, parseInt(colorCount), 3);
 
@@ -121,12 +144,15 @@ function App() {
             sequenceToColorFloatAverage,
             color
           );
-          quantResult.palette[i] = result[2];
-          dyePalette.push(result);
-          counts.push(0);
+
+          dyePalette.push({
+            index: i,
+            display: 0,
+            color: result[2],
+            sequence: result[0],
+            count: 0,
+          });
         }
-
-
 
         for (let i = 0; i < 256; i++) {
           const [r, g, b] = quantResult.map(baseColors, 3 * i);
@@ -136,10 +162,14 @@ function App() {
 
           let index = -1;
           for (let j = 0; j < colorCount && index === -1; j++) {
-            if (r === quantResult.palette[j][0] && g === quantResult.palette[j][1] && b === quantResult.palette[j][2]) {
+            if (
+              r === quantResult.palette[j][0] &&
+              g === quantResult.palette[j][1] &&
+              b === quantResult.palette[j][2]
+            ) {
               index = j;
               if (alphas[i]) {
-                counts[j]++;
+                dyePalette[j].count++;
               }
             }
           }
@@ -147,33 +177,15 @@ function App() {
           paletteId.push(index);
         }
 
-        const tmpPalette = [];
-        let count = 0;
-        let removed = 0;
+        let id = 1;
 
         for (let i = 0; i < parseInt(colorCount); i++) {
-          if (counts[i] > 0)
-          {
-            tmpPalette.push(dyePalette[i])
-            tmpPalette[count].push(count)
-            tmpPalette[count].push(counts[i]);
-            count++;
-          }
-          else{
-            for (let j = 0; j < 256; j++)
-            {
-              if (paletteId[j] + removed >= i)
-              {
-                paletteId[j]--;
-              }
-            }
-            removed++;
+          if (dyePalette[i].count > 0) {
+            dyePalette[i].display = id++;
           }
         }
 
-        console.log(tmpPalette);
-
-        setPalette(tmpPalette);
+        setPalettes(dyePalette);
       } else {
         for (let i = 0; i < 256; i++) {
           quantizedColors.push(baseColors[3 * i + 0]);
@@ -189,54 +201,92 @@ function App() {
           quantizedColors[3 * i + 1],
           quantizedColors[3 * i + 2],
         ];
-        colorStrings.push(`rgb(${r},${g},${b})`);
+        colorArrays.push([r, g, b]);
         colorInts.push(256 * 256 * r + 256 * g + b);
       }
 
-      setColors(colorStrings);
-      setDecColors(colorInts);
+      setExactColors(colorArrays);
       setAlphas(alphas);
-      setIndices(paletteId);
+      setPaletteIds(paletteId);
+      setIntColors(colorInts);
     }
   }, [colorCount, imageData, quantizeColors]);
 
   const paletteDisplay = React.useMemo(() => {
-    if (palette) {
-      return (<>
-        {palette.map((entry) => {
-          if (entry[4] > 0) {
-            let r = (parseInt(entry[2][0]));
-            let g = (parseInt(entry[2][1]));
-            let b = (parseInt(entry[2][2]));
+    if (quantizeColors && palettes) {
+      return (
+        <div className="Scrollable">
+          {palettes.map((entry) => {
+            const handleChange = (e) => {
+              if (e.target.checked) {
+                setHighlightIndex(entry.index);
+              } else {
+                setHighlightIndex(-1);
+              }
+            };
 
-            let color = `rgb(${r},${g},${b})`;
-            let textColor = 'rgb(255,255,255)'
-            if (r > 160 && g > 160 && b > 160)
-            {
-             textColor = 'rgb(0,0,0)'
+            const counts = {};
+            entry.sequence.forEach(function (x) {
+              counts[x] = (counts[x] || 0) + 1;
+            });
+
+            const dyeCounts = [];
+            Object.keys(counts).forEach((key) => {
+              dyeCounts.push(
+                `${counts[key]}×${key
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, function (str) {
+                    return str.toUpperCase();
+                  })}`
+              );
+            });
+
+            if (entry.count > 0) {
+              let r = parseInt(entry.color[0]);
+              let g = parseInt(entry.color[1]);
+              let b = parseInt(entry.color[2]);
+
+              let color = `rgb(${r},${g},${b})`;
+              let textColor = "rgb(255,255,255)";
+
+              if (r > 160 && g > 160 && b > 160) {
+                textColor = "rgb(0,0,0)";
+              }
+
+              return (
+                <div className="Color-row">
+                  <div className="Color-entry-a">
+                    <input
+                      type="checkbox"
+                      onChange={handleChange}
+                      checked={highlightIndex === entry.index}
+                    ></input>
+                  </div>
+                  <p className="Color-entry-a">{entry.display}</p>
+                  <p
+                    className="Color-entry-b"
+                    style={{ backgroundColor: color, color: textColor }}
+                  >{`(${r}, ${g}, ${b})`}</p>
+                  <p className="Color-entry-c">{dyeCounts.join(", ")}</p>
+                </div>
+              );
             }
-
-            return (
-              <div className="Color-row">
-                <p className="Color-entry-a">{entry[3]}</p>
-                <p className="Color-entry-b" style={{ backgroundColor: color, color: textColor }}>{`(${r}, ${g}, ${b})`}</p>
-                <p className="Color-entry-c">{entry[0].join(' > ')}</p>
-              </div >)
-          }
-        })}
-      </>);
+            return null;
+          })}
+        </div>
+      );
     }
-  }, [palette])
-
+  }, [highlightIndex, palettes, quantizeColors]);
 
   const giveCommand = React.useMemo(() => {
-    if (alphas && decColors) {
-      return `/give ${target} ${itemId}[item_model="${largeModel ? "glam:glam_large" : "glam:glam_base"
-        }",custom_model_data={flags:[${alphas.join(
-          ",\u200B"
-        )}],colors:[${decColors.join(",\u200B")}]}]`;
+    if (alphas && intColors) {
+      return `/give ${target} ${itemId}[item_model="${
+        largeModel ? "glam:glam_large" : "glam:glam_base"
+      }",custom_model_data={flags:[${alphas.join(
+        ",\u200B"
+      )}],colors:[${intColors.join(",\u200B")}]}]`;
     }
-  }, [alphas, decColors, itemId, largeModel, target]);
+  }, [alphas, intColors, itemId, largeModel, target]);
 
   const removeZWSP = (str) => {
     return str.replace(/\u200B/g, "");
@@ -254,7 +304,7 @@ function App() {
         </div>
         <div style={{ width: "60%" }}>
           <h4 style={{ lineHeight: 0.05 }}>
-            In-Game Texture Editor for Minecraft Java 24w45a
+            In-Game Texture Editor for Minecraft Java 24w46a
           </h4>
         </div>
         <div style={{ width: "20%" }}>
@@ -268,24 +318,30 @@ function App() {
         <div className="Image-holder">
           <div
             className="Image"
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              imageRendering: "pixelated",
-            }}
             onDrop={handleDrop}
             onDragOver={(event) => event.preventDefault()}
-          ></div>
+          >
+            {image ? (
+              <img
+                alt="Uploaded File"
+                className="Image"
+                src={image}
+                style={{
+                  imageRendering: "pixelated",
+                }}
+              />
+            ) : (
+              <></>
+            )}
+          </div>
 
           <div style={{ width: "40px" }}>
-            <p>{"=>"}</p>
+            <p>{"  "}</p>
           </div>
-          {colors == null ? (
+          {exactColors == null ? (
             <div className="Image" />
           ) : (
-            <ColorGrid colors={colors} alphas={alphas} indices={indices} showIndex={showId && quantizeColors} />
+            <ColorGrid displayInfo={displayInfo} />
           )}
         </div>
         <div className="Command-row">
@@ -365,6 +421,7 @@ function App() {
         )}
         {paletteDisplay}
       </div>
+      <div className="App-footer" />
     </div>
   );
 }

@@ -1,20 +1,58 @@
 import React from "react";
 import "./App.css";
 
-const ColorPixel = ({ x, y, colors, alphas, indices, showIndex }) => {
-  const visible = React.useMemo(() => {
-    return alphas[16 * x + y];
-  }, [alphas, x, y]);
+const ColorPixel = ({ x, y, displayInfo }) => {
+  const cellId = React.useMemo(() => {
+    return 16 * x + y;
+  }, [x, y]);
+
+  const exactColor = React.useMemo(() => {
+    return displayInfo.exactColors[cellId];
+  }, [cellId, displayInfo.exactColors]);
+
+  const paletteId = React.useMemo(() => {
+    return displayInfo.paletteIds[cellId];
+  }, [cellId, displayInfo.paletteIds]);
+
+  const alpha = React.useMemo(() => {
+    return displayInfo.alphas[cellId];
+  }, [cellId, displayInfo.alphas]);
+
+  const palette = React.useMemo(() => {
+    if (paletteId != null && displayInfo.palettes)
+    {
+      return displayInfo.palettes[paletteId];
+    }
+  }, [paletteId, displayInfo.palettes]);
 
   const color = React.useMemo(() => {
-    return visible ? colors[16 * x + y] : "rgb(128,128,128)";
-  }, [colors, visible, x, y]);
-
-  const index = React.useMemo(() => {
-    if (indices) {
-      return indices[16 * x + y];
+    if (displayInfo.quantizeColors && palette) {
+      return palette.color;
+    } else {
+      return exactColor;
     }
-  }, [indices, x, y]);
+  }, [displayInfo, exactColor, palette]);
+
+  const visible = React.useMemo(() => {
+    if (!alpha) return false;
+    if (
+      displayInfo.quantizeColors &&
+      displayInfo.highlightIndex >= 0 &&
+      displayInfo.highlightIndex !== paletteId
+    )
+      return false;
+    return true;
+  }, [
+    alpha,
+    displayInfo.highlightIndex,
+    displayInfo.quantizeColors,
+    paletteId,
+  ]);
+
+  const colorString = React.useMemo(() => {
+    if (!visible) return "rgb(128, 128, 128)";
+    return `rgb(${color[0]},${color[1]},${color[2]})`;
+  }, [color, visible]);
 
   return (
     <div
@@ -28,10 +66,14 @@ const ColorPixel = ({ x, y, colors, alphas, indices, showIndex }) => {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        background: color,
+        background: colorString,
       }}
     >
-      <p style={{ fontSize: "8pt" }}>{showIndex ? visible ? index : '' : ''}</p>
+      <p style={{ fontSize: "8pt" }}>
+        {displayInfo.quantizeColors && displayInfo.showId && palette && visible
+          ? palette.display
+          : ""}
+      </p>
     </div>
   );
 };

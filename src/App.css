@@ -21,7 +21,8 @@
 .App-header {
   background-color: hsl(180, 13%, 18%);
   height: 10vh;
-  width: 100vw;
+  max-width: 90vw;
+  width: 90vw;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -31,15 +32,29 @@
 }
 
 .App-body {
-  width: 760px;
-  height: 90vh;
+  max-width: 760px;
+  min-height: 87vh;
+  max-height: 125vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: fles-start;
+  justify-content: flex-start;
   font-size: calc(8px + 2vmin);
   color: white;
-  overflow-y: "scroll";
+  overflow-y: "auto";
+}
+
+.App-footer {
+  background-color: hsl(180, 13%, 18%);
+  height: 3vh;
+  max-width: 90vw;
+  width: 90vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(8px + 2vmin);
+  color: white;
 }
 
 .App-body-main {
@@ -73,6 +88,12 @@
   justify-content: space-around;
 }
 
+.Scrollable {
+  max-height: 30vh;
+  width:100%;
+  overflow-y: scroll;
+}
+
 .Color-row {
   background-color: hsl(180, 13%, 40%);
   min-width: 100%;
@@ -82,12 +103,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .Color-entry-a {
   height:100%;
-  width: 10%;
+  width: 5%;
   height: 24px;
   display: flex;
   flex-direction: row;
@@ -122,23 +143,21 @@
 }
 
 .Command-holder {
+  
+  max-height: 10vh;
+  width:100%;
+  overflow-y: scroll;
+
   display: flex;
   background: rgb(32, 32, 32);
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  min-width: 744px;
-  max-width: 744px;
-  min-height: 70px;
-  max-height: 70px;
-  inline-size: 750px;
   font-size: 11pt;
   overflow: hidden;
   word-break: break-word;
   text-align: left;
   overflow-y: scroll;
-  padding-left: 1em;
-  text-indent: -1em;
 }
 
 .Image {
