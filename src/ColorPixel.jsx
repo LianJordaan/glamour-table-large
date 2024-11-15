@@ -19,8 +19,7 @@ const ColorPixel = ({ x, y, displayInfo }) => {
   }, [cellId, displayInfo.alphas]);
 
   const palette = React.useMemo(() => {
-    if (paletteId != null && displayInfo.palettes)
-    {
+    if (paletteId != null && displayInfo.palettes) {
       return displayInfo.palettes[paletteId];
     }
   }, [paletteId, displayInfo.palettes]);
@@ -54,6 +53,21 @@ const ColorPixel = ({ x, y, displayInfo }) => {
     return `rgb(${color[0]},${color[1]},${color[2]})`;
   }, [color, visible]);
 
+  const textColorString = React.useMemo(() => {
+    let textColor = "rgb(255,255,255)";
+
+    let brightCount = 0;
+    if (color[0] > 160) brightCount++;
+    if (color[1] > 160) brightCount++;
+    if (color[2] > 160) brightCount++;
+
+    if (brightCount >= 2) {
+      textColor = "rgb(0,0,0)";
+    }
+
+    return textColor;
+  }, [color]);
+
   return (
     <div
       style={{
@@ -69,7 +83,7 @@ const ColorPixel = ({ x, y, displayInfo }) => {
         background: colorString,
       }}
     >
-      <p style={{ fontSize: "8pt" }}>
+      <p style={{ fontSize: "8pt", color: textColorString }}>
         {displayInfo.quantizeColors && displayInfo.showId && palette && visible
           ? palette.display
           : ""}
