@@ -419,6 +419,7 @@ function App() {
             />
           </label>
         </div>
+        <div className="Command-row"><a target="_blank" rel="noopener noreferrer" href="https://github.com/mc-wiki/mcw-calc">Dye Calculator from the Minecraft Wiki Calculator project</a></div>
         {giveCommand ? (
           <>
             <button
