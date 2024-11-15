@@ -20,22 +20,22 @@ export const imgNames = {
 }
 
 export const colorMap = {
-  white: 0xf9fffe,
-  lightGray: 0x9d9d97,
-  gray: 0x474f52,
-  black: 0x1d1d21,
+  white: 0xF9FFFE,
+  lightGray: 0x9D9D97,
+  gray: 0x474F52,
+  black: 0x1D1D21,
   brown: 0x835432,
-  red: 0xb02e26,
-  orange: 0xf9801d,
-  yellow: 0xfed83d,
-  lime: 0x80c71f,
-  green: 0x5e7c16,
-  cyan: 0x169c9c,
-  lightBlue: 0x3ab3da,
-  blue: 0x3c44aa,
-  purple: 0x8932b8,
-  magenta: 0xc74ebd,
-  pink: 0xf38baa
+  red: 0xB02E26,
+  orange: 0xF9801D,
+  yellow: 0xFED83D,
+  lime: 0x80C71F,
+  green: 0x5E7C16,
+  cyan: 0x169C9C,
+  lightBlue: 0x3AB3DA,
+  blue: 0x3C44AA,
+  purple: 0x8932B8,
+  magenta: 0xC74EBD,
+  pink: 0xF38BAA,
 }
 
 export const combs = [
@@ -173,24 +173,32 @@ export function colorToSequence(colorRgbMap, sequenceToColor, targetRgb) {
   return [minSequence, minDeltaE, sequenceToColor(minSequence, colorRgbMap)]
 }
 
-export function sequenceToColorFloatAverage(c, colorRgbMap, round = false) {
-  const color = colorRgbMap[c[0]].map(v => v / 255)
-  for (let i = 1; i < c.length; i++) {
-    const [r, g, b] = colorRgbMap[c[i]]
-    color[0] = (color[0] + r / 255) / 2
-    color[1] = (color[1] + g / 255) / 2
-    color[2] = (color[2] + b / 255) / 2
-    if (round) {
-      color[0] = Math.round(color[0])
-      color[1] = Math.round(color[1])
-      color[2] = Math.round(color[2])
-    }
+export function sequenceToColorJavaArmor(c,  colorRgbMap) {
+  let numberOfColors = 0
+  let totalRed = 0
+  let totalGreen = 0
+  let totalBlue = 0
+  let totalMaximum = 0
+  for (const color of c) {
+    totalRed = totalRed + colorRgbMap[color][0]
+    totalGreen = totalGreen + colorRgbMap[color][1]
+    totalBlue = totalBlue + colorRgbMap[color][2]
+    totalMaximum = totalMaximum + Math.max(...colorRgbMap[color])
+    numberOfColors++
   }
-  return floatRgbToInteger(color)
-}
+  const averageRed = totalRed / numberOfColors
+  const averageGreen = totalGreen / numberOfColors
+  const averageBlue = totalBlue / numberOfColors
+  const averageMaximum = totalMaximum / numberOfColors
+  const maximumOfAverage = Math.max(averageRed, averageGreen, averageBlue)
 
-export function sequenceToColorFloatAverageRounded(c, colorRgbMap) {
-  return sequenceToColorFloatAverage(c, colorRgbMap, true)
+  const gainFactor = averageMaximum / maximumOfAverage
+
+  const resultRed = averageRed * gainFactor
+  const resultGreen = averageGreen * gainFactor
+  const resultBlue = averageBlue * gainFactor
+
+  return [resultRed, resultGreen, resultBlue]
 }
 
 export const colorRgbMap = Object.fromEntries(

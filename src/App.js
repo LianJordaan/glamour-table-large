@@ -5,7 +5,7 @@ import quanti from "quanti";
 
 import {
   colorRgbMap,
-  sequenceToColorFloatAverage,
+  sequenceToColorJavaArmor,
   colorToSequence,
 } from "./Colors";
 
@@ -65,8 +65,7 @@ function App() {
   };
 
   const handleChange = (e) => {
-    if (e.target?.files[0])
-    {
+    if (e.target?.files[0]) {
       setFile(e.target.files[0]);
       setImage(URL.createObjectURL(e.target.files[0]));
     }
@@ -139,20 +138,38 @@ function App() {
 
         for (let i = 0; i < parseInt(colorCount); i++) {
           const color = quantResult.palette[i];
-          const result = colorToSequence(
-            colorRgbMap,
-            sequenceToColorFloatAverage,
-            color
-          );
 
-          dyePalette.push({
-            index: i,
-            display: 0,
-            color: result[2],
-            sequence: result[0],
-            count: 0,
-          });
+          if (color)
+          { 
+            const result = colorToSequence(
+              colorRgbMap,
+              sequenceToColorJavaArmor,
+              [color[0], color[1], color[2]]
+            );
+  
+            dyePalette.push({
+              index: i,
+              display: 0,
+              base: [color[0], color[1], color[2]],
+              color: result[2],
+              sequence: result[0],
+              count: 0,
+            });
+          }
+          else
+          {
+            dyePalette.push({
+              index: i,
+              display: 0,
+              base: [0, 0, 0],
+              color: [0, 0, 0],
+              sequence: [""],
+              count: 0,
+            });
+          }
         }
+
+        console.log(dyePalette);
 
         for (let i = 0; i < 256; i++) {
           const [r, g, b] = quantResult.map(baseColors, 3 * i);
