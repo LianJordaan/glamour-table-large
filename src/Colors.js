@@ -1,3 +1,5 @@
+// This code has been yoinked from the Minecraft Wiki Calculator project: https://github.com/mc-wiki/mcw-calc
+
 export const imgNames = {
   white: "White",
   lightGray: "Light_Gray",
