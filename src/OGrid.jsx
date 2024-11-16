@@ -35,7 +35,7 @@ const OptimizedColorGrid = ({ displayInfo }) => {
   }
 
   return (
-    <div className="Grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(16, 20px)' }}>
+    <div className="items-center justify-center Grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(16, 20px)' }}>
       {gridData.map(({ x, y, colorString, textColorString, palette, visible }) => (
         <div
           key={`${x}-${y}`}

@@ -340,7 +340,7 @@ export default function App() {
                           className="form-checkbox"
                         />
                         <span className={`font-medium ${textColor}`}>
-                          {entry.display}: ({r}, {g}, {b})
+                          {entry.display}: ({Math.round(r)}, {Math.round(g)}, {Math.round(b)})
                         </span>
                       </div>
                     )
@@ -357,7 +357,8 @@ export default function App() {
         </main>
 
         <footer className="mt-12 text-center text-gray-400">
-          <p>Created with ❤️ by dqwertyc</p>
+          <p>Datapack by DqwertyC</p>
+          <p>Web-App by Arubik</p>
           <a
             href="https://modrinth.com/datapack/glamour-table"
             target="_blank"
