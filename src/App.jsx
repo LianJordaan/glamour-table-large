@@ -88,7 +88,7 @@ export default function App() {
       const quantizedColors = []
       if (quantizeColors) {
         const ColorQuantizerInstance = new ColorQuantizer(parseInt(colorCount))
-        const quantResult = ColorQuantizerInstance.quantize(baseColors,3)
+        const quantResult = ColorQuantizerInstance.quantize(baseColors,alphas, 3)
         //const quantResult = quanti(baseColors, parseInt(colorCount), 3)
         for (let i = 0; i < parseInt(colorCount); i++) {
           const color = quantResult.palette[i]
