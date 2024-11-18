@@ -26,11 +26,11 @@ const GetImage = (value) => {
     case 'black': return black_dye;
     case 'blue': return blue_dye;
     case 'brown': return brown_dye;
-    case 'cyen': return cyen_dye;
+    case 'cyan': return cyen_dye;
     case 'gray': return gray_dye;
     case 'green': return green_dye;
-    case 'light_blue': return light_blue_dye;
-    case 'light_gray': return light_gray_dye;
+    case 'lightBlue': return light_blue_dye;
+    case 'lightGray': return light_gray_dye;
     case 'lime': return lime_dye;
     case 'magenta': return magenta_dye;
     case 'orange': return orange_dye;
@@ -46,8 +46,10 @@ const GetImage = (value) => {
 const titleCase = (s) =>
   s.replace (/^[-_]*(.)/, (_, c) => c.toUpperCase())       // Initial char (after -/_)
    .replace (/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()) // First char after each -/_
-
+   .replace(/([a-z])([A-Z])/g, '$1 $2')                    // Split CamelCase to Title Case
 const CraftingGrid = ({sequence}) => {
+
+  console.log(sequence)
   return (
     <div className="flex-grid fill-width">
       <div className="flex-grid-row fill-width">
