@@ -192,8 +192,14 @@ export default function App() {
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-2">Minecraft Texture Editor</h1>
-          <p className="text-xl text-gray-400">Create custom textures for Minecraft Java 24w46a</p>
+          <h1 className="text-4xl font-bold mb-2">Glamour Table Texture Editor</h1>
+          <p className="text-xl text-gray-400">Create custom textures in Minecraft Java 24w45a+</p>
+          <p className="text-xl text-gray-400">Requires the <a
+            href="https://modrinth.com/datapack/glamour-table"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline"
+          >Glamour Table</a> datapack</p>
         </header>
 
         <main className="bg-gray-800 rounded-lg p-8 shadow-xl">
