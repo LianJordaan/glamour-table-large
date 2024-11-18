@@ -8,7 +8,10 @@ import {
   colorToSequence,
   sequenceToColorJavaArmor,
 } from "./Colors";
+
 import OptimizedColorGrid from './OGrid';
+
+import CraftingGrid from './Crafting';
 
 export default function App() {
   const [file, setFile] = useState(null)
@@ -88,7 +91,7 @@ export default function App() {
       const quantizedColors = []
       if (quantizeColors) {
         const ColorQuantizerInstance = new ColorQuantizer(parseInt(colorCount))
-        const quantResult = ColorQuantizerInstance.quantize(baseColors,alphas, 3)
+        const quantResult = ColorQuantizerInstance.quantize(baseColors, alphas, 3)
         //const quantResult = quanti(baseColors, parseInt(colorCount), 3)
         for (let i = 0; i < parseInt(colorCount); i++) {
           const color = quantResult.palette[i]
@@ -172,11 +175,10 @@ export default function App() {
 
   const giveCommand = useMemo(() => {
     if (alphas && intColors) {
-      return `/give ${target} ${itemId}[item_model="${
-        largeModel ? 'glam:glam_large' : 'glam:glam_base'
-      }",custom_model_data={flags:[${alphas.join(
-        ',\u200B'
-      )}],colors:[${intColors.join(',\u200B')}]}]`
+      return `/give ${target} ${itemId}[item_model="${largeModel ? 'glam:glam_large' : 'glam:glam_base'
+        }",custom_model_data={flags:[${alphas.join(
+          ',\u200B'
+        )}],colors:[${intColors.join(',\u200B')}]}]`
     }
   }, [alphas, intColors, itemId, largeModel, target])
 
@@ -330,18 +332,22 @@ export default function App() {
                     return (
                       <div
                         key={entry.index}
-                        className="flex items-center space-x-2 p-2 rounded-md"
+                        className="flex column items-center space-x-2 p-2 rounded-md"
                         style={{ backgroundColor: color }}
                       >
-                        <input
-                          type="checkbox"
-                          checked={highlightIndex === entry.index}
-                          onChange={(e) => setHighlightIndex(e.target.checked ? entry.index : -1)}
-                          className="form-checkbox"
-                        />
-                        <span className={`font-medium ${textColor}`}>
-                          {entry.display}: ({Math.round(r)}, {Math.round(g)}, {Math.round(b)})
-                        </span>
+                        <div
+                          className="flex row fill-width items-center space-x-2 p-2 rounded-md">
+                          <input
+                            type="checkbox"
+                            checked={highlightIndex === entry.index}
+                            onChange={(e) => setHighlightIndex(e.target.checked ? entry.index : -1)}
+                            className="form-checkbox"
+                          />
+                          <span className={`font-medium ${textColor}`}>
+                            {entry.display}: ({Math.round(r)}, {Math.round(g)}, {Math.round(b)})
+                          </span>
+                        </div>
+                        <CraftingGrid sequence={entry.sequence} />
                       </div>
                     )
                   }
