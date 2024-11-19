@@ -175,10 +175,10 @@ export default function App() {
 
   const giveCommand = useMemo(() => {
     if (alphas && intColors) {
-      return `/give ${target} ${itemId}[item_model="${largeModel ? 'glam:glam_large' : 'glam:glam_base'
-        }",custom_model_data={flags:[${alphas.join(
-          ',\u200B'
-        )}],colors:[${intColors.join(',\u200B')}]}]`
+      return `/give ${target} ${itemId}[` +
+      `item_model="${largeModel ? 'glam:glam_large' : 'glam:glam_base'}",` +
+      `custom_data={has_glamour:1b, ${largeModel ? 'is_canvas:1b' : 'is_tool:1b'}},` +
+      `custom_model_data={flags:[${alphas.join(',\u200B')}],colors:[${intColors.join(',\u200B')}]}]`;
     }
   }, [alphas, intColors, itemId, largeModel, target])
 
