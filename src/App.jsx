@@ -1,7 +1,7 @@
-import { ChevronDown, ChevronUp, Copy, ImageIcon } from 'lucide-react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, Copy, ImageIcon } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import ColorQuantizer from './Quantizer';
+import ColorQuantizer from "./Quantizer";
 
 import {
   colorRgbMap,
@@ -9,94 +9,104 @@ import {
   sequenceToColorJavaArmor,
 } from "./Colors";
 
-import OptimizedColorGrid from './OGrid';
+import OptimizedColorGrid from "./OGrid";
 
-import CraftingGrid from './Crafting';
+import CraftingGrid from "./Crafting";
 
 export default function App() {
-  const [file, setFile] = useState(null)
-  const [image, setImage] = useState(null)
-  const [imageData, setImageData] = useState(null)
-  const [exactColors, setExactColors] = useState(null)
-  const [intColors, setIntColors] = useState(null)
-  const [paletteIds, setPaletteIds] = useState(null)
-  const [alphas, setAlphas] = useState(null)
-  const [highlightIndex, setHighlightIndex] = useState(-1)
-  const [palettes, setPalettes] = useState(null)
-  const [target, setTarget] = useState('@p')
-  const [itemId, setItemId] = useState('poisonous_potato')
-  const [largeModel, setLargeModel] = useState(false)
-  const [showId, setShowId] = useState(false)
-  const [quantizeColors, setQuantizeColors] = useState(false)
-  const [colorCount, setColorCount] = useState('8')
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
+  const [file, setFile] = useState(null);
+  const [image, setImage] = useState(null);
+  const [imageData, setImageData] = useState(null);
+  const [exactColors, setExactColors] = useState(null);
+  const [intColors, setIntColors] = useState(null);
+  const [paletteIds, setPaletteIds] = useState(null);
+  const [alphas, setAlphas] = useState(null);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [palettes, setPalettes] = useState(null);
+  const [target, setTarget] = useState("@p");
+  const [itemId, setItemId] = useState("paper");
+  const [modelType, setModelType] = useState("glam:glam_base");
+  const [showId, setShowId] = useState(false);
+  const [quantizeColors, setQuantizeColors] = useState(false);
+  const [colorCount, setColorCount] = useState("8");
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  const hiddenFileInput = useRef(null)
+  const hiddenFileInput = useRef(null);
 
-  const handleClick = () => hiddenFileInput.current.click()
+  const handleClick = () => hiddenFileInput.current.click();
 
   const handleDrop = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0])
-      setImage(URL.createObjectURL(e.dataTransfer.files[0]))
+      setFile(e.dataTransfer.files[0]);
+      setImage(URL.createObjectURL(e.dataTransfer.files[0]));
     }
-  }
+  };
 
   const handleChange = (e) => {
     if (e.target?.files[0]) {
-      setFile(e.target.files[0])
-      setImage(URL.createObjectURL(e.target.files[0]))
+      setFile(e.target.files[0]);
+      setImage(URL.createObjectURL(e.target.files[0]));
     }
-  }
+  };
 
   useEffect(() => {
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        const img = new Image()
+        const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas')
-          const ctx = canvas.getContext('2d')
-          canvas.width = 16
-          canvas.height = 16
-          ctx.drawImage(img, 0, 0, 16, 16)
-          setImageData(ctx.getImageData(0, 0, canvas.width, canvas.height).data)
-        }
-        img.src = e.target.result
-      }
-      reader.readAsDataURL(file)
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = 16;
+          canvas.height = 16;
+          ctx.drawImage(img, 0, 0, 16, 16);
+          setImageData(
+            ctx.getImageData(0, 0, canvas.width, canvas.height).data
+          );
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
-  }, [file, colorCount])
+  }, [file, colorCount]);
 
   useEffect(() => {
     if (imageData) {
-      const baseColors = []
-      const alphas = []
-      const paletteId = []
-      const dyePalette = []
+      const baseColors = [];
+      const alphas = [];
+      const paletteId = [];
+      const dyePalette = [];
 
       for (let i = 0; i < 256; i++) {
-        const j = 16 * (15 - ((i / 16) | 0)) + (i % 16)
+        const j = 16 * (15 - ((i / 16) | 0)) + (i % 16);
         const [r, g, b, a] = [
           imageData[4 * j],
           imageData[4 * j + 1],
           imageData[4 * j + 2],
           imageData[4 * j + 3],
-        ]
-        baseColors.push(r, g, b)
-        alphas.push(a > 16)
+        ];
+        baseColors.push(r, g, b);
+        alphas.push(a > 16);
       }
 
-      const quantizedColors = []
+      const quantizedColors = [];
       if (quantizeColors) {
-        const ColorQuantizerInstance = new ColorQuantizer(parseInt(colorCount))
-        const quantResult = ColorQuantizerInstance.quantize(baseColors, alphas, 3)
+        const ColorQuantizerInstance = new ColorQuantizer(parseInt(colorCount));
+        const quantResult = ColorQuantizerInstance.quantize(
+          baseColors,
+          alphas,
+          3
+        );
         //const quantResult = quanti(baseColors, parseInt(colorCount), 3)
         for (let i = 0; i < parseInt(colorCount); i++) {
-          const color = quantResult.palette[i]
+          const color = quantResult.palette[i];
           if (color) {
-            const result = colorToSequence(colorRgbMap, sequenceToColorJavaArmor, color)
+            const result = colorToSequence(
+              colorRgbMap,
+              sequenceToColorJavaArmor,
+              color
+            );
             dyePalette.push({
               index: i,
               display: 0,
@@ -104,62 +114,70 @@ export default function App() {
               color: result[2],
               sequence: result[0],
               count: 0,
-            })
+            });
           } else {
             dyePalette.push({
               index: i,
               display: 0,
               base: [0, 0, 0],
               color: [0, 0, 0],
-              sequence: [''],
+              sequence: [""],
               count: 0,
-            })
+            });
           }
         }
 
         for (let i = 0; i < 256; i++) {
-          const [r, g, b] = quantResult.map(baseColors, 3 * i)
-          quantizedColors.push(r, g, b)
-          let index = -1
+          const [r, g, b] = quantResult.map(baseColors, 3 * i);
+          quantizedColors.push(r, g, b);
+          let index = -1;
           for (let j = 0; j < colorCount && index === -1; j++) {
             if (
               r === quantResult.palette[j][0] &&
               g === quantResult.palette[j][1] &&
               b === quantResult.palette[j][2]
             ) {
-              index = j
-              if (alphas[i]) dyePalette[j].count++
+              index = j;
+              if (alphas[i]) dyePalette[j].count++;
             }
           }
-          paletteId.push(index)
+          paletteId.push(index);
         }
 
-        let id = 1
+        let id = 1;
         for (let i = 0; i < parseInt(colorCount); i++) {
-          if (dyePalette[i].count > 0) dyePalette[i].display = id++
+          if (dyePalette[i].count > 0) dyePalette[i].display = id++;
         }
-        setPalettes(dyePalette)
+        setPalettes(dyePalette);
       } else {
         for (let i = 0; i < 256; i++) {
-          quantizedColors.push(baseColors[3 * i], baseColors[3 * i + 1], baseColors[3 * i + 2])
-          paletteId.push(-1)
+          quantizedColors.push(
+            baseColors[3 * i],
+            baseColors[3 * i + 1],
+            baseColors[3 * i + 2]
+          );
+          paletteId.push(-1);
         }
       }
 
-      const colorArrays = []
-      const colorInts = []
+      const colorArrays = [];
+      const colorInts = [];
       for (let i = 0; i < 256; i++) {
-        const [r, g, b] = [quantizedColors[3 * i], quantizedColors[3 * i + 1], quantizedColors[3 * i + 2]]
-        colorArrays.push([r, g, b])
-        colorInts.push(256 * 256 * r + 256 * g + b)
+        const [r, g, b] = [
+          quantizedColors[3 * i],
+          quantizedColors[3 * i + 1],
+          quantizedColors[3 * i + 2],
+        ];
+        colorArrays.push([r, g, b]);
+        colorInts.push(256 * 256 * r + 256 * g + b);
       }
 
-      setExactColors(colorArrays)
-      setAlphas(alphas)
-      setPaletteIds(paletteId)
-      setIntColors(colorInts)
+      setExactColors(colorArrays);
+      setAlphas(alphas);
+      setPaletteIds(paletteId);
+      setIntColors(colorInts);
     }
-  }, [colorCount, imageData, quantizeColors])
+  }, [colorCount, imageData, quantizeColors]);
 
   const displayInfo = useMemo(() => {
     return {
@@ -170,36 +188,60 @@ export default function App() {
       palettes,
       quantizeColors,
       showId,
-    }
-  }, [exactColors, paletteIds, alphas, highlightIndex, palettes, quantizeColors, showId])
+    };
+  }, [
+    exactColors,
+    paletteIds,
+    alphas,
+    highlightIndex,
+    palettes,
+    quantizeColors,
+    showId,
+  ]);
 
   const giveCommand = useMemo(() => {
     if (alphas && intColors) {
-      return `/give ${target} ${itemId}[` +
-      `item_model="${largeModel ? 'glam:glam_large' : 'glam:glam_base'}",` +
-      `custom_data={has_glamour:1b, ${largeModel ? 'is_canvas:1b' : 'is_tool:1b'}},` +
-      `custom_model_data={flags:[${alphas.join(',\u200B')}],colors:[${intColors.join(',\u200B')}]}]`;
+      return (
+        `/give ${target} ${itemId}[` +
+        `item_model="${modelType}",` +
+        `custom_data={has_glamour:1b,${
+        (modelType === "glam:glam_large") ? "is_canvas:1b" : "is_tool:1b"
+        }},` +
+        `custom_model_data={flags:[${alphas.join(
+          ",\u200B"
+        )}],colors:[${intColors.join(",\u200B")}]}]`
+      );
     }
-  }, [alphas, intColors, itemId, largeModel, target])
+  }, [alphas, intColors, itemId, modelType, target]);
 
-  const removeZWSP = (str) => str.replace(/\u200B/g, '')
+  const removeZWSP = (str) => str.replace(/\u200B/g, "");
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(removeZWSP(giveCommand))
-  }
+    navigator.clipboard.writeText(removeZWSP(giveCommand));
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-2">Glamour Table Texture Editor</h1>
-          <p className="text-xl text-gray-400">Create custom textures in Minecraft Java 24w45a+</p>
-          <p className="text-xl text-gray-400">Requires the <a
-            href="https://modrinth.com/datapack/glamour-table"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 underline"
-          >Glamour Table</a> datapack</p>
+          <h1 className="text-4xl font-bold mb-2">
+            Glamour Table Texture Editor
+          </h1>
+          <p className="text-xl text-gray-400">
+            Create custom textures in Minecraft Java 24w45a+
+          </p>
+          <p className="text-xl text-gray-400">
+            Requires the{" "}
+            <a
+              href="https://modrinth.com/datapack/glamour-table"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              Glamour Table
+            </a>{" "}
+            datapack
+          </p>
         </header>
 
         <main className="bg-gray-800 rounded-lg p-8 shadow-xl">
@@ -215,7 +257,7 @@ export default function App() {
                   src={image}
                   alt="Uploaded texture"
                   className="w-full h-full object-cover"
-                  style={{ imageRendering: 'pixelated' }}
+                  style={{ imageRendering: "pixelated" }}
                 />
               ) : (
                 <div className="text-center">
@@ -256,20 +298,23 @@ export default function App() {
 
           <div className="flex items-center justify-between mb-8">
             <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={largeModel}
-                onChange={(e) => setLargeModel(e.target.checked)}
-                className="form-checkbox text-blue-500"
-              />
-              <span>Use Large Model</span>
+              <span>Model Type:</span>
+              <select className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors" value={modelType} onChange={(e) => {setModelType(e.target.value)}}>
+                <option value="glam:glam_base">Tool</option>
+                <option value="glam:glam_large">Canvas</option>
+                <option value="glam:glam_item">Item</option>
+              </select>
             </label>
             <button
               className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors"
               onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
             >
               <span>Advanced Options</span>
-              {isAdvancedOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {isAdvancedOpen ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -286,7 +331,9 @@ export default function App() {
                   <span>Dyeable Colors</span>
                 </label>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Max Color Count</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Max Color Count
+                  </label>
                   <input
                     type="number"
                     value={colorCount}
@@ -332,32 +379,43 @@ export default function App() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {palettes.map((entry) => {
                   if (entry.count > 0) {
-                    const { r, g, b } = { r: entry.color[0], g: entry.color[1], b: entry.color[2] }
-                    const color = `rgb(${r},${g},${b})`
-                    const textColor = r > 160 && g > 160 && b > 160 ? 'text-gray-900' : 'text-white'
+                    const { r, g, b } = {
+                      r: entry.color[0],
+                      g: entry.color[1],
+                      b: entry.color[2],
+                    };
+                    const color = `rgb(${r},${g},${b})`;
+                    const textColor =
+                      r > 160 && g > 160 && b > 160
+                        ? "text-gray-900"
+                        : "text-white";
                     return (
                       <div
                         key={entry.index}
                         className="flex column items-center space-x-2 p-2 rounded-md"
                         style={{ backgroundColor: color }}
                       >
-                        <div
-                          className="flex row fill-width items-center space-x-2 p-2 rounded-md">
+                        <div className="flex row fill-width items-center space-x-2 p-2 rounded-md">
                           <input
                             type="checkbox"
                             checked={highlightIndex === entry.index}
-                            onChange={(e) => setHighlightIndex(e.target.checked ? entry.index : -1)}
+                            onChange={(e) =>
+                              setHighlightIndex(
+                                e.target.checked ? entry.index : -1
+                              )
+                            }
                             className="form-checkbox"
                           />
                           <span className={`font-medium ${textColor}`}>
-                            {entry.display}: ({Math.round(r)}, {Math.round(g)}, {Math.round(b)})
+                            {entry.display}: ({Math.round(r)}, {Math.round(g)},{" "}
+                            {Math.round(b)})
                           </span>
                         </div>
                         <CraftingGrid sequence={entry.sequence} />
                       </div>
-                    )
+                    );
                   }
-                  return null
+                  return null;
                 })}
               </div>
             </div>
@@ -382,5 +440,5 @@ export default function App() {
         </footer>
       </div>
     </div>
-  )
+  );
 }
