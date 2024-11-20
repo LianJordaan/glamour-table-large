@@ -364,7 +364,7 @@ export default function App() {
                   <input
                     type="number"
                     value={colorCount}
-                    onChange={(e) => setColorCount(e.target.value)}
+                    onChange={(e) => {if (e.target.value <= 64 && e.target.value >=1) {setColorCount(e.target.value)}}}
                     disabled={!quantizeColors}
                     className="w-full px-3 py-2 bg-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                   />
