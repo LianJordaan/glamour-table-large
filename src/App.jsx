@@ -69,7 +69,7 @@ export default function App() {
       };
       reader.readAsDataURL(file);
     }
-  }, [file, colorCount]);
+  }, [file]);
 
   useEffect(() => {
     if (imageData) {
@@ -107,14 +107,35 @@ export default function App() {
               sequenceToColorJavaArmor,
               color
             );
-            dyePalette.push({
-              index: i,
-              display: 0,
-              base: color,
-              color: result[2],
-              sequence: result[0],
-              count: 0,
+
+            let overlap = false;
+            dyePalette.forEach((entry) => {
+              if (entry.color[0] === result[2][0] && entry.color[1] === result[2][1] && entry.color[2] === result[2][2]) {
+                overlap = true;
+              }
             });
+
+            if (!overlap) {
+              dyePalette.push({
+                index: i,
+                display: 0,
+                base: color,
+                color: result[2],
+                sequence: result[0],
+                count: 0,
+              });
+            } else {
+              console.log("Overlap!")
+              quantResult.palette[i] = [512, 512, 512];
+              dyePalette.push({
+                index: i,
+                display: 0,
+                base: [0, 0, 0],
+                color: [0, 0, 0],
+                sequence: [""],
+                count: 0,
+              });
+            }
           } else {
             dyePalette.push({
               index: i,
@@ -205,7 +226,7 @@ export default function App() {
         `/give ${target} ${itemId}[` +
         `item_model="${modelType}",` +
         `custom_data={has_glamour:1b,${
-        (modelType === "glam:glam_large") ? "is_canvas:1b" : "is_tool:1b"
+          modelType === "glam:glam_large" ? "is_canvas:1b" : "is_tool:1b"
         }},` +
         `custom_model_data={flags:[${alphas.join(
           ",\u200B"
@@ -299,7 +320,13 @@ export default function App() {
           <div className="flex items-center justify-between mb-8">
             <label className="flex items-center space-x-2">
               <span>Model Type:</span>
-              <select className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors" value={modelType} onChange={(e) => {setModelType(e.target.value)}}>
+              <select
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors"
+                value={modelType}
+                onChange={(e) => {
+                  setModelType(e.target.value);
+                }}
+              >
                 <option value="glam:glam_base">Tool</option>
                 <option value="glam:glam_large">Canvas</option>
                 <option value="glam:glam_item">Item</option>

@@ -49,7 +49,7 @@ class ColorQuantizer {
 
       if (alphas[i]) {
         const [r, g, b] = pixels.slice(3 * i, 3 * i + 3);
-        const rgb = `${r},${g},${b}`
+        const rgb = `${r & 0xfa},${g& 0xfa},${b& 0xfa}`
 
         if (!colorCounts[rgb]) {
           colorCounts[rgb] = 0;
@@ -59,7 +59,7 @@ class ColorQuantizer {
       }
     }
 
-    const sortedColors = Object.keys(colorCounts).sort((a, b) => (colorCounts[b] - colorCounts[a] == 0 ? a.localeCompare(b) : colorCounts[b] - colorCounts[a]));
+    const sortedColors = Object.keys(colorCounts).sort((a, b) => (colorCounts[b] - colorCounts[a] === 0 ? a.localeCompare(b) : colorCounts[b] - colorCounts[a]));
 
     const len = Math.min(count, sortedColors.length);
 
