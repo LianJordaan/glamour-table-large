@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/glamour-table/static/css/main.b9a122a5.css",
-    "main.js": "/glamour-table/static/js/main.14164980.js",
+    "main.js": "/glamour-table/static/js/main.095ad88c.js",
     "static/js/453.10068f59.chunk.js": "/glamour-table/static/js/453.10068f59.chunk.js",
     "index.html": "/glamour-table/index.html",
     "main.b9a122a5.css.map": "/glamour-table/static/css/main.b9a122a5.css.map",
-    "main.14164980.js.map": "/glamour-table/static/js/main.14164980.js.map",
+    "main.095ad88c.js.map": "/glamour-table/static/js/main.095ad88c.js.map",
     "453.10068f59.chunk.js.map": "/glamour-table/static/js/453.10068f59.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b9a122a5.css",
-    "static/js/main.14164980.js"
+    "static/js/main.095ad88c.js"
   ]
 }
