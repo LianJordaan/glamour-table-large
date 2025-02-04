@@ -7,9 +7,9 @@ const OptimizedColorGrid = ({ displayInfo }) => {
     }
 
     const data = [];
-    for (let x = 0; x < 32; x++) {
-      for (let y = 0; y < 32; y++) {
-        const cellId = 32 * (31-x) + (y);
+    for (let x = 0; x < 512; x++) {
+      for (let y = 0; y < 512; y++) {
+        const cellId = 512 * (511-x) + (y);
         const exactColor = displayInfo.exactColors[cellId] || [0, 0, 0];
         const paletteId = displayInfo.paletteIds ? displayInfo.paletteIds[cellId] : null;
         const alpha = displayInfo.alphas ? displayInfo.alphas[cellId] : 1;
@@ -35,7 +35,7 @@ const OptimizedColorGrid = ({ displayInfo }) => {
   }
 
   return (
-    <div className="items-center justify-center Grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(32, 20px)' }}>
+    <div className="items-center justify-center Grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(512, 20px)' }}>
       {gridData.map(({ x, y, colorString, textColorString, palette, visible }) => (
         <div
           key={`${x}-${y}`}

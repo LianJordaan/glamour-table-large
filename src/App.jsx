@@ -58,9 +58,9 @@ export default function App() {
         img.onload = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-          canvas.width = 32;
-          canvas.height = 32;
-          ctx.drawImage(img, 0, 0, 32, 32);
+          canvas.width = 512;
+          canvas.height = 512;
+          ctx.drawImage(img, 0, 0, 512, 512);
           setImageData(
             ctx.getImageData(0, 0, canvas.width, canvas.height).data
           );
@@ -78,8 +78,8 @@ export default function App() {
       const paletteId = [];
       const dyePalette = [];
 
-      for (let i = 0; i < 1024; i++) {
-        const j = 32 * (31 - ((i / 32) | 0)) + (i % 32);
+      for (let i = 0; i < 262144; i++) {
+        const j = 512 * (511 - ((i / 512) | 0)) + (i % 512);
         const [r, g, b, a] = [
           imageData[4 * j],
           imageData[4 * j + 1],
@@ -148,7 +148,7 @@ export default function App() {
           }
         }
 
-        for (let i = 0; i < 1024; i++) {
+        for (let i = 0; i < 262144; i++) {
           const [r, g, b] = quantResult.map(baseColors, 3 * i);
           quantizedColors.push(r, g, b);
           let index = -1;
@@ -171,7 +171,7 @@ export default function App() {
         }
         setPalettes(dyePalette);
       } else {
-        for (let i = 0; i < 1024; i++) {
+        for (let i = 0; i < 262144; i++) {
           quantizedColors.push(
             baseColors[3 * i],
             baseColors[3 * i + 1],
@@ -183,7 +183,7 @@ export default function App() {
 
       const colorArrays = [];
       const colorInts = [];
-      for (let i = 0; i < 1024; i++) {
+      for (let i = 0; i < 262144; i++) {
         const [r, g, b] = [
           quantizedColors[3 * i],
           quantizedColors[3 * i + 1],
